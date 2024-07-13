@@ -77,22 +77,24 @@ int main()
 	const int distancePtoBullet = 80;
 	const int bulletSpeed = 5;
 	const int bulletFrameInterval_ms = 10;
-	imgLoadCtrl playerImg(&path, playerImgNum, { 80,120 },false,false);
-	imgLoadCtrl playerImgWhite(&path, playerImgNum, { 80,120 }, false, true);
+	imgLoadCtrl playerImg(&path, playerImgNum, { 80,120 });
+	imgLoadCtrl playerImgWhite(&path, playerImgNum, { 80,120 });
+	playerImgWhite.setWhite();
 
 	std::wstring bulpath = L"img/basketball";
 	const int bulletImgNum = 1;
-	imgLoadCtrl bulletImg(&bulpath, bulletImgNum, { 20,20 },false,false);
+	imgLoadCtrl bulletImg(&bulpath, bulletImgNum, { 20,20 });
 
 	std::wstring enemypath = L"img/enemy";
 	const int enemyImgNum = 4;
 	const int enemyFrameInterval_ms = 100;
-	imgLoadCtrl enemyImgRight(&enemypath, enemyImgNum, { 50,50 },false,false);
-	imgLoadCtrl enemyImgLeft(&enemypath, enemyImgNum, { 50,50 }, true,false);
+	imgLoadCtrl enemyImgRight(&enemypath, enemyImgNum, { 50,50 });
+	imgLoadCtrl enemyImgLeft(&enemypath, enemyImgNum, { 50,50 });
+	enemyImgLeft.setConvert();
 	//
 	std::wstring skillpath = L"img/chicken";
 	const int skillImgNum = 1;
-	imgLoadCtrl skillImg(&skillpath, skillImgNum, { 50,50 },false,false);
+	imgLoadCtrl skillImg(&skillpath, skillImgNum, { 50,50 });
 
 	Player *player=new Player(&playerImg, &playerImgWhite, playerFrameInterval_ms, bulletNum, distancePtoBullet, bulletSpeed, bulletFrameInterval_ms, &bulletImg,&skillImg);
 

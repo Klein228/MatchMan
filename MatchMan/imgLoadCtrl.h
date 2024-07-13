@@ -5,13 +5,14 @@
 class imgLoadCtrl
 {
 public:
-	imgLoadCtrl(std::wstring* path, int num, POINT s, bool Isconvert, bool Iswhite);
+	imgLoadCtrl(std::wstring* path, int num, POINT s);
 	~imgLoadCtrl();
 	std::vector<IMAGE*>* getImages();
 	int getImagesNum();
 	void draw(POINT* loc, int imgNum);
+	void setWhite();
+	void setConvert();
 private:
-	IMAGE* setConvert(IMAGE* img);
-	IMAGE* setWhite(IMAGE* img);
+	size_t img_num;
 	std::vector<IMAGE*> imgsPoint;
 };
