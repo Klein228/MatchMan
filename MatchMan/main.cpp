@@ -44,6 +44,7 @@ int main()
 	//music
 	mciSendString(_T("open music/bgm.mp3 alias bgm"), NULL, 0, NULL);
 	mciSendString(_T("open music/hit.wav alias hit"), NULL, 0, NULL);
+	mciSendString(_T("open music/frozen1.wav alias frozen"), NULL, 0, NULL);
 	
 	//启动批处理渲染
 	BeginBatchDraw();
@@ -185,6 +186,8 @@ int main()
 				mciSendString(L"close bgm", NULL, 0, NULL); // 关闭并释放资源
 				mciSendString(L"stop hit", NULL, 0, NULL); // 停止播放
 				mciSendString(L"close hit", NULL, 0, NULL); // 关闭并释放资源
+				mciSendString(L"stop frozen", NULL, 0, NULL); // 停止播放
+				mciSendString(L"close frozen", NULL, 0, NULL); // 关闭并释放资源
 				MessageBox(GetHWnd(), L"YOU LOSE!!", L"游戏结束", 1);
 				delete enemies;
 				gameover = false;

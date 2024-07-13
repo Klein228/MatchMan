@@ -69,7 +69,7 @@ void Enemy::touchedBySkill(Player* p)
 			//alive = false;
 			if (!frozened)
 			{
-				mciSendString(_T("play hit from 0"), NULL, 0, NULL);
+				mciSendString(_T("play frozen from 0"), NULL, 0, NULL);
 				frozen_frame = enemyFrameNum;
 				frozened = true;
 				last_frozened_time_ms = GetTickCount();
