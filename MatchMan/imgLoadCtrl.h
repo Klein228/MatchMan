@@ -12,7 +12,9 @@ public:
 	void draw(POINT* loc, int imgNum);
 	void setWhite();
 	void setConvert();
+	void setCoverwith(IMAGE* cov_img, float rate);
 private:
 	size_t img_num;
 	std::vector<IMAGE*> imgsPoint;
+	POINT image_size;
 };

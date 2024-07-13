@@ -1,12 +1,14 @@
 #include"EnemyCtrl.h"
 
-EnemyCtrl::EnemyCtrl(int time, int interval, imgLoadCtrl* enemyImgR, imgLoadCtrl* enemyImgL)
+EnemyCtrl::EnemyCtrl(int time, int interval, imgLoadCtrl* enemyImgR, imgLoadCtrl* enemyImgL, imgLoadCtrl* imgRfrozen, imgLoadCtrl* imgLfrozen)
 {
 	Frameinterval = interval;
 	generate_interval_time = time;
 	EnemyImgR = enemyImgR;
 	EnemyImgL = enemyImgL;
-	Enemy* enemy = new Enemy(EnemyImgR,EnemyImgL, Frameinterval, locationGenerate(1280, 720));
+	EnemyImgRf = imgRfrozen;
+	EnemyImgLf = imgLfrozen;
+	Enemy* enemy = new Enemy(EnemyImgR,EnemyImgL,imgRfrozen,imgLfrozen, Frameinterval, locationGenerate(1280, 720));
 	enemies.push_back(enemy);
 	last_generate_time = GetTickCount();
 };
@@ -21,7 +23,7 @@ void EnemyCtrl::generateEnemy()
 {
 	if (GetTickCount() - last_generate_time > generate_interval_time)
 	{
-		Enemy* newEnemy = new Enemy(EnemyImgR, EnemyImgL, Frameinterval, locationGenerate(1280, 720));
+		Enemy* newEnemy = new Enemy(EnemyImgR, EnemyImgL,EnemyImgRf,EnemyImgLf, Frameinterval, locationGenerate(1280, 720));
 		last_generate_time = GetTickCount();
 		enemies.push_back(newEnemy);
 	}
@@ -59,28 +61,12 @@ int EnemyCtrl::touchBullets(Player* p)
 	}
 	return deathNum;
 }
-int EnemyCtrl::touchSkills(Player* p)
+void EnemyCtrl::touchSkills(Player* p)
 {
-	std::vector<int> deadIndex;
-	Enemy* enemy;
-	int deathNum = 0;
 	for (size_t i = 0; i < enemies.size(); i++)
 	{
-		if (enemies[i]->touchedBySkill(p))
-		{
-			deadIndex.push_back(i);
-		}
-
+		enemies[i]->touchedBySkill(p);
 	}
-	deathNum = deadIndex.size();
-	for (int i = deadIndex.size() - 1; i >= 0; i--)
-	{
-		enemy = enemies.at(deadIndex[i]);
-		delete enemy;
-		enemies[deadIndex[i]] = enemies.back();
-		enemies.pop_back();
-	}
-	return deathNum;
 }
 void EnemyCtrl::enemiesDraw()
 {

@@ -1,10 +1,12 @@
 #include"Enemy.h"
 
-Enemy::Enemy(imgLoadCtrl* imgRight,imgLoadCtrl* imgLeft, int delta_ms, POINT loc)
+Enemy::Enemy(imgLoadCtrl* imgRight, imgLoadCtrl* imgLeft, imgLoadCtrl* imgRfrozen, imgLoadCtrl* imgLfrozen, int delta_ms, POINT loc)
 {
 	interval_ms = delta_ms;
 	enemyIMGRight = imgRight;
 	enmyImgLeft = imgLeft;
+	enmyImgLeftFrozen = imgLfrozen;
+	enemyIMGRightFrozen = imgRfrozen;
 	TCHAR plrpath[256];
 	enemy_location.first = loc.x;
 	enemy_location.second = loc.y;
@@ -30,9 +32,11 @@ bool Enemy::movetoplayer(Player* p)
 	{
 		return true;
 	}
-	enemy_location.first += enemyMovespeed * (direction_vector.first / sqrt(direction_vector.first * direction_vector.first + direction_vector.second * direction_vector.second));
-	enemy_location.second += enemyMovespeed * (direction_vector.second / sqrt(direction_vector.first * direction_vector.first + direction_vector.second * direction_vector.second));
-
+	if(!frozened)
+	{
+		enemy_location.first += enemyMovespeed * (direction_vector.first / sqrt(direction_vector.first * direction_vector.first + direction_vector.second * direction_vector.second));
+		enemy_location.second += enemyMovespeed * (direction_vector.second / sqrt(direction_vector.first * direction_vector.first + direction_vector.second * direction_vector.second));
+	}
 	return false;
 }
 bool Enemy::touchedByBullet(Player* p)
@@ -52,7 +56,7 @@ bool Enemy::touchedByBullet(Player* p)
 	}
 	return false;
 }
-bool Enemy::touchedBySkill(Player* p)
+void Enemy::touchedBySkill(Player* p)
 {
 	int d = p->getSkillDistance();
 	for (size_t i = 0; i < p->getSkillLoc()->size(); i++)
@@ -62,12 +66,18 @@ bool Enemy::touchedBySkill(Player* p)
 
 		if (sqrt(delta.x * delta.x + delta.y * delta.y) < d)
 		{
-			alive = false;
-			mciSendString(_T("play hit from 0"), NULL, 0, NULL);
-			return true;
+			//alive = false;
+			if (!frozened)
+			{
+				mciSendString(_T("play hit from 0"), NULL, 0, NULL);
+				frozen_frame = enemyFrameNum;
+				frozened = true;
+				last_frozened_time_ms = GetTickCount();
+			}
+			
+			
 		}
 	}
-	return false;
 }
 void Enemy::draw(int ticknow)
 {
@@ -80,10 +90,42 @@ void Enemy::draw(int ticknow)
 	POINT temp = { enemy_location.first,enemy_location.second };
 	if (facingRight)
 	{
-		enemyIMGRight->draw(&temp, enemyFrameNum);
+		if (frozened)
+		{
+			if (GetTickCount() - last_frozened_time_ms < frozen_continue_time_ms)
+			{
+				enemyIMGRightFrozen->draw(&temp, frozen_frame);
+			}
+			else
+			{
+				frozened = false;
+				enemyIMGRight->draw(&temp, enemyFrameNum);
+			}
+		}
+		else
+		{
+			enemyIMGRight->draw(&temp, enemyFrameNum);
+		}
+		
 	}
 	else
 	{
-		enmyImgLeft->draw(&temp, enemyFrameNum);
+		if (frozened)
+		{
+			if (GetTickCount() - last_frozened_time_ms < frozen_continue_time_ms)
+			{
+				enmyImgLeftFrozen->draw(&temp, frozen_frame);
+			}
+			else
+			{
+				frozened = false;
+				enmyImgLeft->draw(&temp, enemyFrameNum);
+			}
+		}
+		else
+		{
+			enmyImgLeft->draw(&temp, enemyFrameNum);
+		}
+		
 	}
 }

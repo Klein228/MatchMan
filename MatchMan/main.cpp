@@ -66,9 +66,13 @@ int main()
 	IMAGE quitButton;
 	loadimage(&quitButton, _T("img/quit.png"));
 
-
+	//游戏数值设定
 	const int enemy_refresh_interval = 2000;
 	const int touchjudgeDistance = 40;
+	//结冰图加载
+	IMAGE frozen_img;
+	std::wstring frozenpath = L"img/frozen0.png";
+	loadimage(&frozen_img, frozenpath.c_str());
 
 	std::wstring path = L"img/player";
 	const int playerImgNum = 6;
@@ -90,6 +94,11 @@ int main()
 	const int enemyFrameInterval_ms = 100;
 	imgLoadCtrl enemyImgRight(&enemypath, enemyImgNum, { 50,50 });
 	imgLoadCtrl enemyImgLeft(&enemypath, enemyImgNum, { 50,50 });
+	imgLoadCtrl enemyImgRFrozen(&enemypath, enemyImgNum, { 50,50 });
+	imgLoadCtrl enemyImgLFrozen(&enemypath, enemyImgNum, { 50,50 });
+	enemyImgRFrozen.setCoverwith(&frozen_img,0.25);
+	enemyImgLFrozen.setConvert();
+	enemyImgLFrozen.setCoverwith(&frozen_img, 0.25);
 	enemyImgLeft.setConvert();
 	//
 	std::wstring skillpath = L"img/chicken";
@@ -98,7 +107,7 @@ int main()
 
 	Player *player=new Player(&playerImg, &playerImgWhite, playerFrameInterval_ms, bulletNum, distancePtoBullet, bulletSpeed, bulletFrameInterval_ms, &bulletImg,&skillImg);
 
-	EnemyCtrl *enemies=new EnemyCtrl(enemy_refresh_interval, enemyFrameInterval_ms,&enemyImgRight,&enemyImgLeft);
+	EnemyCtrl *enemies=new EnemyCtrl(enemy_refresh_interval, enemyFrameInterval_ms,&enemyImgRight,&enemyImgLeft,&enemyImgRFrozen,&enemyImgLFrozen);
 
 	bool playerDead = false;
 	bool gameover = false;
@@ -134,7 +143,7 @@ int main()
 						startgame = true;
 						playerDead = false;
 						mciSendString(_T("play bgm repeat from 0"), NULL, 0, NULL);
-						enemies = new EnemyCtrl(enemy_refresh_interval,enemyFrameInterval_ms, &enemyImgRight,&enemyImgLeft);
+						enemies = new EnemyCtrl(enemy_refresh_interval,enemyFrameInterval_ms, &enemyImgRight,&enemyImgLeft, &enemyImgRFrozen, &enemyImgLFrozen);
 					}
 					else if (msg.x <= getwidth() / 2 - startButton.getwidth() / 2 + startButton.getwidth() && msg.x >= getwidth() / 2 - startButton.getwidth() / 2 &&
 							 msg.y <= getheight() * 2 / 3 + 2*startButton.getheight() && msg.y >= getheight() * 2 / 3+startButton.getheight())
@@ -160,7 +169,7 @@ int main()
 		{
 			enemies->generateEnemy();
 			score += enemies->touchBullets(player);
-			score += enemies->touchSkills(player);
+			enemies->touchSkills(player);
 			touched = enemies->runtoplayer(player);
 
 			//图像绘制
